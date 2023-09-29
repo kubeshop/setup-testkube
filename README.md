@@ -31,15 +31,15 @@ Use it to install Testkube CLI to manage your resources, run tests and test suit
 ## Table of content
 
 1. [Usage](#usage)
-  1. [Testkube Cloud](#testkube-cloud)
-  2. [Self-hosted instance](#self-hosted-instance)
-  3. [Examples](#examples)
-     1. [Run a test on AWS EKS](#run-a-test-on-aws-eks)
-     2. [Run a test on the Cloud instance](#run-a-test-on-the-cloud-instance)
+   1. [Testkube Cloud](#testkube-cloud)
+   2. [Self-hosted instance](#self-hosted-instance)
+   3. [Examples](#examples)
+      1. [Run a test on AWS EKS](#run-a-test-on-aws-eks)
+      2. [Run a test on the Cloud instance](#run-a-test-on-the-cloud-instance)
 2. [Inputs](#inputs)
-  1. [Common](#common)
-  2. [Kubernetes (`kubectl`)](#kubernetes-kubectl)
-  3. [Cloud and Enterprise](#cloud-and-enterprise-cloud)
+   1. [Common](#common)
+   2. [Kubernetes (`kubectl`)](#kubernetes-kubectl)
+   3. [Cloud and Enterprise](#cloud-and-enterprise-cloud)
 
 ## Usage
 
