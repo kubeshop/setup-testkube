@@ -8,10 +8,38 @@ branding:
   icon: "check-circle"
   color: "green"
 inputs:
+  # Installation
   channel:
-    description: "Channel to use for the Testkube CLI."
+    description: "Channel to use for the Testkube CLI - `stable` or `beta`."
     required: false
     default: stable
   version:
     description: "Specific Testkube CLI version to install. Defaults to latest."
+    required: false
+
+  # Configuration
+  mode:
+    description: "Testkube context - `local` for kubectl configuration, `cloud` for connecting with Cloud/Enterprise."
+    required: false
+    default: local
+
+  # Local configuration
+  namespace:
+    description: "Kubernetes namespace where Testkube is located"
+    required: false
+    default: testkube
+
+  # Cloud configuration
+  url:
+    description: "Testkube Cloud/Enterprise root domain, defaults to the Testkube Cloud (testkube.io)."
+    default: "testkube.io"
+    required: false
+  organization:
+    description: "Organization ID in the Testkube Cloud/Enterprise."
+    required: false
+  environment:
+    description: "Environment ID in the Testkube Cloud/Enterprise."
+    required: false
+  token:
+    description: "Auth token for the Testkube instance."
     required: false

@@ -1,3 +1,4 @@
+import {spawnSync} from 'node:child_process';
 import * as fs from 'node:fs';
 import * as stream from 'node:stream';
 import * as os from 'node:os';
@@ -7,14 +8,36 @@ import tar from 'tar';
 import which from 'which';
 
 interface Params {
-  version: string | null;
-  channel: string | null;
+  version?: string | null;
+  channel: string;
+  mode?: string | null;
+  namespace?: string | null;
+  url: string;
+  organization?: string | null;
+  environment?: string | null;
+  token?: string | null;
 }
 
 const params: Params = {
   version: getInput('version'),
   channel: getInput('channel') || 'stable',
+  mode: getInput('mode') || 'local',
+  namespace: getInput('namespace') || 'testkube',
+  url: getInput('url') || 'testkube.io',
+  organization: getInput('organization'),
+  environment: getInput('environment'),
+  token: getInput('token'),
 };
+
+// Check params
+if (!['local', 'cloud'].includes(params.mode!)) {
+  throw new Error('Invalid `mode` passed - only "local" or "cloud" is allowed.');
+}
+if (params.mode === 'cloud') {
+  if (!params.organization || !params.environment || !params.token) {
+    throw new Error('You need to pass `organization`, `environment` and `token` for Cloud connection.');
+  }
+}
 
 // Detect architecture
 const architectureMapping: Record<string, string> = {
@@ -64,48 +87,61 @@ if (!hasKubectl) {
 
 // Detect if there is Testkube CLI already installed
 if (await which('kubectl-testkube', {nothrow: true})) {
-  process.stdout.write('Looks like you already have the Testkube CLI installed. Skipping...');
-  process.exit(0);
-}
-
-// Detect the latest version
-if (params.version) {
-  params.version = params.version.replace(/^v/, '');
-  process.stdout.write(`Forcing "${params.version} version...\n`);
+  process.stdout.write('Looks like you already have the Testkube CLI installed. Skipping...\n');
 } else {
-  process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
-  if (params.channel === 'stable') {
-    const release: any = await got('https://api.github.com/repos/kubeshop/testkube/releases/latest').json();
-    params.version = release?.tag_name;
+  // Detect the latest version
+  if (params.version) {
+    params.version = params.version.replace(/^v/, '');
+    process.stdout.write(`Forcing "${params.version} version...\n`);
   } else {
-    const channels = ['stable', params.channel];
     process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
+    if (params.channel === 'stable') {
+      const release: any = await got('https://api.github.com/repos/kubeshop/testkube/releases/latest').json();
+      params.version = release?.tag_name;
+    } else {
+      const channels = ['stable', params.channel];
+      process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
 
-    const releases: any[] = await got('https://api.github.com/repos/kubeshop/testkube/releases').json();
-    const versions = releases.map(release => ({
-      tag: release.tag_name,
-      channel: release.tag_name.match(/-([^0-9]+)/)?.[1] || 'stable',
-    }));
-    params.version = versions.find(({channel}) => channels.includes(channel))?.tag;
+      const releases: any[] = await got('https://api.github.com/repos/kubeshop/testkube/releases').json();
+      const versions = releases.map(release => ({
+        tag: release.tag_name,
+        channel: release.tag_name.match(/-([^0-9]+)/)?.[1] || 'stable',
+      }));
+      params.version = versions.find(({channel}) => channels.includes(channel))?.tag;
+    }
+    if (!params.version) {
+      throw new Error('Not found any version matching criteria.');
+    }
+    params.version = params.version.replace(/^v/, '');
+    process.stdout.write(`   Latest version: ${params.version}\n`);
   }
-  if (!params.version) {
-    throw new Error('Not found any version matching criteria.');
-  }
-  params.version = params.version.replace(/^v/, '');
-  process.stdout.write(`   Latest version: ${params.version}\n`);
+
+  const artifactUrl = `https://github.com/kubeshop/testkube/releases/download/v${encodeURIComponent(params.version)}/testkube_${encodeURIComponent(params.version)}_${encodeURIComponent(system)}_${encodeURIComponent(architecture)}.tar.gz`;
+  process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
+
+  const artifactStream = got.stream(artifactUrl).pipe(tar.x({C: binaryDirPath}, ['kubectl-testkube']));
+
+  await stream.promises.finished(artifactStream);
+
+  process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
+
+  await fs.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/testkube`);
+  process.stdout.write(`Linked CLI as ${binaryDirPath}/testkube.\n`);
+
+  await fs.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/tk`);
+  process.stdout.write(`Linked CLI as ${binaryDirPath}/tk.\n`);
 }
 
-const artifactUrl = `https://github.com/kubeshop/testkube/releases/download/v${encodeURIComponent(params.version)}/testkube_${encodeURIComponent(params.version)}_${encodeURIComponent(system)}_${encodeURIComponent(architecture)}.tar.gz`;
-process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
+// Configure the Testkube context
+const contextArgs = params.mode === 'local'
+  ? [
+    '--kubeconfig',
+    '--namespace', params.namespace!,
+  ] : [
+    '--api-key', params.token!,
+    '--cloud-root-domain', params.url!,
+    '--org', params.organization!,
+    '--env', params.environment!,
+  ];
 
-const artifactStream = got.stream(artifactUrl).pipe(tar.x({C: binaryDirPath}, ['kubectl-testkube']));
-
-await stream.promises.finished(artifactStream);
-
-process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
-
-await fs.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/testkube`);
-process.stdout.write(`Linked CLI as ${binaryDirPath}/testkube.\n`);
-
-await fs.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/tk`);
-process.stdout.write(`Linked CLI as ${binaryDirPath}/tk.\n`);
+process.exit(spawnSync('testkube', ['set', 'context', ...contextArgs], {stdio: 'inherit'}).status || 0);

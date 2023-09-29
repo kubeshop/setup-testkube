@@ -15206,18 +15206,21 @@ try {
 "use strict";
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 __nccwpck_require__.r(__webpack_exports__);
-/* harmony import */ var node_fs__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7561);
-/* harmony import */ var node_fs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(node_fs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var node_stream__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(4492);
-/* harmony import */ var node_stream__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(node_stream__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var node_os__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(612);
-/* harmony import */ var node_os__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(node_os__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(2186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var got__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(4256);
-/* harmony import */ var tar__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(4674);
-/* harmony import */ var which__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(6143);
-/* harmony import */ var which__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__nccwpck_require__.n(which__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var node_child_process__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7718);
+/* harmony import */ var node_child_process__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(node_child_process__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var node_fs__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(7561);
+/* harmony import */ var node_fs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(node_fs__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var node_stream__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(4492);
+/* harmony import */ var node_stream__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(node_stream__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var node_os__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(612);
+/* harmony import */ var node_os__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__nccwpck_require__.n(node_os__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(2186);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var got__WEBPACK_IMPORTED_MODULE_7__ = __nccwpck_require__(4256);
+/* harmony import */ var tar__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(4674);
+/* harmony import */ var which__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(6143);
+/* harmony import */ var which__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__nccwpck_require__.n(which__WEBPACK_IMPORTED_MODULE_6__);
+
 
 
 
@@ -15226,9 +15229,24 @@ __nccwpck_require__.r(__webpack_exports__);
 
 
 const params = {
-    version: (0,_actions_core__WEBPACK_IMPORTED_MODULE_3__.getInput)('version'),
-    channel: (0,_actions_core__WEBPACK_IMPORTED_MODULE_3__.getInput)('channel') || 'stable',
+    version: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('version'),
+    channel: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('channel') || 'stable',
+    mode: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('mode') || 'local',
+    namespace: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('namespace') || 'testkube',
+    url: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('url') || 'testkube.io',
+    organization: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('organization'),
+    environment: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('environment'),
+    token: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('token'),
 };
+// Check params
+if (!['local', 'cloud'].includes(params.mode)) {
+    throw new Error('Invalid `mode` passed - only "local" or "cloud" is allowed.');
+}
+if (params.mode === 'cloud') {
+    if (!params.organization || !params.environment || !params.token) {
+        throw new Error('You need to pass `organization`, `environment` and `token` for Cloud connection.');
+    }
+}
 // Detect architecture
 const architectureMapping = {
     x86_64: 'x86_64',
@@ -15238,8 +15256,8 @@ const architectureMapping = {
     aarch64: 'arm64',
     i386: 'i386',
 };
-const architecture = architectureMapping[node_os__WEBPACK_IMPORTED_MODULE_2__.machine()];
-process.stdout.write(`Architecture: ${node_os__WEBPACK_IMPORTED_MODULE_2__.machine()} (${architecture || 'unsupported'})\n`);
+const architecture = architectureMapping[node_os__WEBPACK_IMPORTED_MODULE_3__.machine()];
+process.stdout.write(`Architecture: ${node_os__WEBPACK_IMPORTED_MODULE_3__.machine()} (${architecture || 'unsupported'})\n`);
 if (!architecture) {
     throw new Error('We do not support this architecture yet.');
 }
@@ -15250,15 +15268,15 @@ const systemMapping = {
     Windows: 'Windows',
     Windows_NT: 'Windows',
 };
-const system = systemMapping[node_os__WEBPACK_IMPORTED_MODULE_2__.type()];
-process.stdout.write(`System: ${node_os__WEBPACK_IMPORTED_MODULE_2__.type()} (${system || 'unsupported'})\n`);
+const system = systemMapping[node_os__WEBPACK_IMPORTED_MODULE_3__.type()];
+process.stdout.write(`System: ${node_os__WEBPACK_IMPORTED_MODULE_3__.type()} (${system || 'unsupported'})\n`);
 if (!system) {
     throw new Error('We do not support this OS yet.');
 }
 // Detect binaries path
 // TODO: Consider installing Testkube in some random place, and add it to PATH environment variable
 const detectedPaths = (process.env.PATH || '').split(':').filter(Boolean).sort((a, b) => a.length - b.length);
-const writablePaths = (await Promise.all(detectedPaths.map(async (dirPath) => ({ path: dirPath, writable: await node_fs__WEBPACK_IMPORTED_MODULE_0__.promises.access(dirPath, node_fs__WEBPACK_IMPORTED_MODULE_0__.constants.W_OK).then(() => true).catch(() => false) })))).filter(x => x.writable).map(x => x.path);
+const writablePaths = (await Promise.all(detectedPaths.map(async (dirPath) => ({ path: dirPath, writable: await node_fs__WEBPACK_IMPORTED_MODULE_1__.promises.access(dirPath, node_fs__WEBPACK_IMPORTED_MODULE_1__.constants.W_OK).then(() => true).catch(() => false) })))).filter(x => x.writable).map(x => x.path);
 const preferredPaths = ['/usr/local/bin', '/usr/bin'];
 const binaryDirPath = preferredPaths.find(x => writablePaths.includes(x)) || writablePaths[0];
 process.stdout.write(`Binary path: ${binaryDirPath || '<none>'}\n`);
@@ -15266,52 +15284,65 @@ if (!binaryDirPath) {
     throw new Error('Could not find a writable path that is exposed in PATH to put the binary.');
 }
 // Detect if there is kubectl installed
-const hasKubectl = await which__WEBPACK_IMPORTED_MODULE_5___default()('kubectl', { nothrow: true });
+const hasKubectl = await which__WEBPACK_IMPORTED_MODULE_6___default()('kubectl', { nothrow: true });
 process.stdout.write(`kubectl: ${hasKubectl ? 'detected' : 'not available'}.\n`);
 if (!hasKubectl) {
     throw new Error('You do not have kubectl installed. Most likely you need to configure your workflow to initialize connection with Kubernetes cluster.');
 }
 // Detect if there is Testkube CLI already installed
-if (await which__WEBPACK_IMPORTED_MODULE_5___default()('kubectl-testkube', { nothrow: true })) {
-    process.stdout.write('Looks like you already have the Testkube CLI installed. Skipping...');
-    process.exit(0);
-}
-// Detect the latest version
-if (params.version) {
-    params.version = params.version.replace(/^v/, '');
-    process.stdout.write(`Forcing "${params.version} version...\n`);
+if (await which__WEBPACK_IMPORTED_MODULE_6___default()('kubectl-testkube', { nothrow: true })) {
+    process.stdout.write('Looks like you already have the Testkube CLI installed. Skipping...\n');
 }
 else {
-    process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
-    if (params.channel === 'stable') {
-        const release = await (0,got__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .ZP)('https://api.github.com/repos/kubeshop/testkube/releases/latest').json();
-        params.version = release?.tag_name;
+    // Detect the latest version
+    if (params.version) {
+        params.version = params.version.replace(/^v/, '');
+        process.stdout.write(`Forcing "${params.version} version...\n`);
     }
     else {
-        const channels = ['stable', params.channel];
         process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
-        const releases = await (0,got__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .ZP)('https://api.github.com/repos/kubeshop/testkube/releases').json();
-        const versions = releases.map(release => ({
-            tag: release.tag_name,
-            channel: release.tag_name.match(/-([^0-9]+)/)?.[1] || 'stable',
-        }));
-        params.version = versions.find(({ channel }) => channels.includes(channel))?.tag;
+        if (params.channel === 'stable') {
+            const release = await (0,got__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .ZP)('https://api.github.com/repos/kubeshop/testkube/releases/latest').json();
+            params.version = release?.tag_name;
+        }
+        else {
+            const channels = ['stable', params.channel];
+            process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
+            const releases = await (0,got__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .ZP)('https://api.github.com/repos/kubeshop/testkube/releases').json();
+            const versions = releases.map(release => ({
+                tag: release.tag_name,
+                channel: release.tag_name.match(/-([^0-9]+)/)?.[1] || 'stable',
+            }));
+            params.version = versions.find(({ channel }) => channels.includes(channel))?.tag;
+        }
+        if (!params.version) {
+            throw new Error('Not found any version matching criteria.');
+        }
+        params.version = params.version.replace(/^v/, '');
+        process.stdout.write(`   Latest version: ${params.version}\n`);
     }
-    if (!params.version) {
-        throw new Error('Not found any version matching criteria.');
-    }
-    params.version = params.version.replace(/^v/, '');
-    process.stdout.write(`   Latest version: ${params.version}\n`);
+    const artifactUrl = `https://github.com/kubeshop/testkube/releases/download/v${encodeURIComponent(params.version)}/testkube_${encodeURIComponent(params.version)}_${encodeURIComponent(system)}_${encodeURIComponent(architecture)}.tar.gz`;
+    process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
+    const artifactStream = got__WEBPACK_IMPORTED_MODULE_7__/* ["default"].stream */ .ZP.stream(artifactUrl).pipe(tar__WEBPACK_IMPORTED_MODULE_5__.x({ C: binaryDirPath }, ['kubectl-testkube']));
+    await node_stream__WEBPACK_IMPORTED_MODULE_2__.promises.finished(artifactStream);
+    process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
+    await node_fs__WEBPACK_IMPORTED_MODULE_1__.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/testkube`);
+    process.stdout.write(`Linked CLI as ${binaryDirPath}/testkube.\n`);
+    await node_fs__WEBPACK_IMPORTED_MODULE_1__.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/tk`);
+    process.stdout.write(`Linked CLI as ${binaryDirPath}/tk.\n`);
 }
-const artifactUrl = `https://github.com/kubeshop/testkube/releases/download/v${encodeURIComponent(params.version)}/testkube_${encodeURIComponent(params.version)}_${encodeURIComponent(system)}_${encodeURIComponent(architecture)}.tar.gz`;
-process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
-const artifactStream = got__WEBPACK_IMPORTED_MODULE_6__/* ["default"].stream */ .ZP.stream(artifactUrl).pipe(tar__WEBPACK_IMPORTED_MODULE_4__.x({ C: binaryDirPath }, ['kubectl-testkube']));
-await node_stream__WEBPACK_IMPORTED_MODULE_1__.promises.finished(artifactStream);
-process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
-await node_fs__WEBPACK_IMPORTED_MODULE_0__.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/testkube`);
-process.stdout.write(`Linked CLI as ${binaryDirPath}/testkube.\n`);
-await node_fs__WEBPACK_IMPORTED_MODULE_0__.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/tk`);
-process.stdout.write(`Linked CLI as ${binaryDirPath}/tk.\n`);
+// Configure the Testkube context
+const contextArgs = params.mode === 'local'
+    ? [
+        '--kubeconfig',
+        '--namespace', params.namespace,
+    ] : [
+    '--api-key', params.token,
+    '--cloud-root-domain', params.url,
+    '--org', params.organization,
+    '--env', params.environment,
+];
+process.exit((0,node_child_process__WEBPACK_IMPORTED_MODULE_0__.spawnSync)('testkube', ['set', 'context', ...contextArgs], { stdio: 'inherit' }).status || 0);
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } }, 1);
@@ -15395,6 +15426,14 @@ module.exports = require("https");
 
 "use strict";
 module.exports = require("net");
+
+/***/ }),
+
+/***/ 7718:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:child_process");
 
 /***/ }),
 
