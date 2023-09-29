@@ -15284,10 +15284,15 @@ if (!binaryDirPath) {
     throw new Error('Could not find a writable path that is exposed in PATH to put the binary.');
 }
 // Detect if there is kubectl installed
-const hasKubectl = await which__WEBPACK_IMPORTED_MODULE_6___default()('kubectl', { nothrow: true });
-process.stdout.write(`kubectl: ${hasKubectl ? 'detected' : 'not available'}.\n`);
-if (!hasKubectl) {
-    throw new Error('You do not have kubectl installed. Most likely you need to configure your workflow to initialize connection with Kubernetes cluster.');
+if (params.mode === 'kubectl') {
+    const hasKubectl = await which__WEBPACK_IMPORTED_MODULE_6___default()('kubectl', { nothrow: true });
+    process.stdout.write(`kubectl: ${hasKubectl ? 'detected' : 'not available'}.\n`);
+    if (!hasKubectl) {
+        throw new Error('You do not have kubectl installed. Most likely you need to configure your workflow to initialize connection with Kubernetes cluster.');
+    }
+}
+else {
+    process.stdout.write('kubectl: ignored for Cloud integration\n');
 }
 // Detect if there is Testkube CLI already installed
 if (await which__WEBPACK_IMPORTED_MODULE_6___default()('kubectl-testkube', { nothrow: true })) {

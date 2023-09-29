@@ -79,10 +79,14 @@ if (!binaryDirPath) {
 }
 
 // Detect if there is kubectl installed
-const hasKubectl = await which('kubectl', {nothrow: true});
-process.stdout.write(`kubectl: ${hasKubectl ? 'detected' : 'not available'}.\n`);
-if (!hasKubectl) {
-  throw new Error('You do not have kubectl installed. Most likely you need to configure your workflow to initialize connection with Kubernetes cluster.');
+if (params.mode === 'kubectl') {
+  const hasKubectl = await which('kubectl', {nothrow: true});
+  process.stdout.write(`kubectl: ${hasKubectl ? 'detected' : 'not available'}.\n`);
+  if (!hasKubectl) {
+    throw new Error('You do not have kubectl installed. Most likely you need to configure your workflow to initialize connection with Kubernetes cluster.');
+  }
+} else {
+  process.stdout.write('kubectl: ignored for Cloud integration\n');
 }
 
 // Detect if there is Testkube CLI already installed
