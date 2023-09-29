@@ -15231,6 +15231,7 @@ const params = {
 };
 // Detect architecture
 const architectureMapping = {
+    x86_64: 'x86_64',
     x64: 'x86_64',
     amd64: 'x86_64',
     arm64: 'arm64',

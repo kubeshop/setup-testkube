@@ -18,6 +18,7 @@ const params: Params = {
 
 // Detect architecture
 const architectureMapping: Record<string, string> = {
+  x86_64: 'x86_64',
   x64: 'x86_64',
   amd64: 'x86_64',
   arm64: 'arm64',
