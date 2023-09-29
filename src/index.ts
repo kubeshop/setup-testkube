@@ -21,7 +21,7 @@ interface Params {
 const params: Params = {
   version: getInput('version'),
   channel: getInput('channel') || 'stable',
-  mode: getInput('mode') || 'local',
+  mode: getInput('mode') || 'kubectl',
   namespace: getInput('namespace') || 'testkube',
   url: getInput('url') || 'testkube.io',
   organization: getInput('organization'),
@@ -30,8 +30,8 @@ const params: Params = {
 };
 
 // Check params
-if (!['local', 'cloud'].includes(params.mode!)) {
-  throw new Error('Invalid `mode` passed - only "local" or "cloud" is allowed.');
+if (!['kubectl', 'cloud'].includes(params.mode!)) {
+  throw new Error('Invalid `mode` passed - only "kubectl" or "cloud" is allowed.');
 }
 if (params.mode === 'cloud') {
   if (!params.organization || !params.environment || !params.token) {
@@ -133,7 +133,7 @@ if (await which('kubectl-testkube', {nothrow: true})) {
 }
 
 // Configure the Testkube context
-const contextArgs = params.mode === 'local'
+const contextArgs = params.mode === 'kubectl'
   ? [
     '--kubeconfig',
     '--namespace', params.namespace!,

@@ -15231,7 +15231,7 @@ __nccwpck_require__.r(__webpack_exports__);
 const params = {
     version: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('version'),
     channel: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('channel') || 'stable',
-    mode: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('mode') || 'local',
+    mode: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('mode') || 'kubectl',
     namespace: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('namespace') || 'testkube',
     url: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('url') || 'testkube.io',
     organization: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('organization'),
@@ -15239,8 +15239,8 @@ const params = {
     token: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('token'),
 };
 // Check params
-if (!['local', 'cloud'].includes(params.mode)) {
-    throw new Error('Invalid `mode` passed - only "local" or "cloud" is allowed.');
+if (!['kubectl', 'cloud'].includes(params.mode)) {
+    throw new Error('Invalid `mode` passed - only "kubectl" or "cloud" is allowed.');
 }
 if (params.mode === 'cloud') {
     if (!params.organization || !params.environment || !params.token) {
@@ -15332,7 +15332,7 @@ else {
     process.stdout.write(`Linked CLI as ${binaryDirPath}/tk.\n`);
 }
 // Configure the Testkube context
-const contextArgs = params.mode === 'local'
+const contextArgs = params.mode === 'kubectl'
     ? [
         '--kubeconfig',
         '--namespace', params.namespace,

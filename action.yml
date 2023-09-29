@@ -19,11 +19,11 @@ inputs:
 
   # Configuration
   mode:
-    description: "Testkube context - `local` for kubectl configuration, `cloud` for connecting with Cloud/Enterprise."
+    description: "Testkube context - `kubectl` for kubectl configuration (default), `cloud` for connecting with Cloud/Enterprise."
     required: false
-    default: local
+    default: kubectl
 
-  # Local configuration
+  # kubectl configuration
   namespace:
     description: "Kubernetes namespace where Testkube is located"
     required: false
