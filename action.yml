@@ -1,0 +1,17 @@
+name: "Setup Testkube CLI"
+author: "Kubeshop"
+description: "Interact with your Testkube cluster."
+runs:
+  using: "node16"
+  main: "dist/index.js"
+branding:
+  icon: "check-circle"
+  color: "green"
+inputs:
+  channel:
+    description: "Channel to use for the Testkube CLI."
+    required: false
+    default: stable
+  version:
+    description: "Specific Testkube CLI version to install. Defaults to latest."
+    required: false
