@@ -15231,18 +15231,21 @@ __nccwpck_require__.r(__webpack_exports__);
 const params = {
     version: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('version'),
     channel: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('channel') || 'stable',
-    mode: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('mode') || 'kubectl',
     namespace: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('namespace') || 'testkube',
     url: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('url') || 'testkube.io',
     organization: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('organization'),
     environment: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('environment'),
     token: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)('token'),
 };
-// Check params
-if (!['kubectl', 'cloud'].includes(params.mode)) {
-    throw new Error('Invalid `mode` passed - only "kubectl" or "cloud" is allowed.');
+const mode = (params.organization || params.environment || params.token) ? 'cloud' : 'kubectl';
+if (mode === 'cloud') {
+    process.stdout.write(`Detected mode: cloud connection.\n`);
 }
-if (params.mode === 'cloud') {
+else {
+    process.stdout.write(`Detected mode: kubectl connection. To use Cloud connection instead, provide your 'organization', 'environment' and 'token'.\n`);
+}
+// Check params
+if (mode === 'cloud') {
     if (!params.organization || !params.environment || !params.token) {
         throw new Error('You need to pass `organization`, `environment` and `token` for Cloud connection.');
     }
@@ -15284,7 +15287,7 @@ if (!binaryDirPath) {
     throw new Error('Could not find a writable path that is exposed in PATH to put the binary.');
 }
 // Detect if there is kubectl installed
-if (params.mode === 'kubectl') {
+if (mode === 'kubectl') {
     const hasKubectl = await which__WEBPACK_IMPORTED_MODULE_6___default()('kubectl', { nothrow: true });
     process.stdout.write(`kubectl: ${hasKubectl ? 'detected' : 'not available'}.\n`);
     if (!hasKubectl) {
@@ -15337,7 +15340,7 @@ else {
     process.stdout.write(`Linked CLI as ${binaryDirPath}/tk.\n`);
 }
 // Configure the Testkube context
-const contextArgs = params.mode === 'kubectl'
+const contextArgs = mode === 'kubectl'
     ? [
         '--kubeconfig',
         '--namespace', params.namespace,
