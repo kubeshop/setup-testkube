@@ -17,12 +17,6 @@ inputs:
     description: "Specific Testkube CLI version to install. Defaults to latest."
     required: false
 
-  # Configuration
-  mode:
-    description: "Testkube context - `kubectl` for kubectl configuration (default), `cloud` for connecting with Cloud/Enterprise."
-    required: false
-    default: kubectl
-
   # kubectl configuration
   namespace:
     description: "Kubernetes namespace where Testkube is located"

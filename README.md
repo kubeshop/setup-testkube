@@ -56,7 +56,6 @@ Then, pass the `organization` and `environment` IDs for the test, along with the
 uses: kubeshop/setup-testkube@v1
 with:
   # Instance
-  mode: cloud
   organization: tkcorg_0123456789abcdef
   environment: tkcenv_fedcba9876543210
   token: tkcapi_0123456789abcdef0123456789abcd
@@ -68,7 +67,6 @@ It will be probably unsafe to keep directly in the workflow's YAML configuration
 uses: kubeshop/setup-testkube@v1
 with:
   # Instance
-  mode: cloud
   organization: ${{ secrets.TkOrganization }}
   environment: ${{ secrets.TkEnvironment }}
   token: ${{ secrets.TkToken }}
@@ -102,7 +100,6 @@ steps:
   # Setup Testkube
   - uses: kubeshop/setup-testkube@v1
     with:
-      mode: cloud
       organization: ${{ secrets.TkOrganization }}
       environment: ${{ secrets.TkEnvironment }}
       token: ${{ secrets.TkToken }}
@@ -119,7 +116,6 @@ steps:
   # Setup Testkube
   - uses: kubeshop/setup-testkube@v1
     with:
-      mode: cloud
       organization: ${{ secrets.TkOrganization }}
       environment: ${{ secrets.TkEnvironment }}
       token: ${{ secrets.TkToken }}
@@ -131,7 +127,7 @@ steps:
 
 ## Inputs
 
-Besides common inputs, there are some different for `kubectl` and `cloud` mode configuration.
+Besides common inputs, there are some different for kubectl and Cloud connection.
 
 ### Common
 
@@ -139,7 +135,6 @@ Besides common inputs, there are some different for `kubectl` and `cloud` mode c
 |:--------:|-------------------|------------------------------------------------------------------------------------------------------------------------------|
 |    ✗     | `channel`         | Distribution channel to install the latest application from - one of `stable` or `beta` (default: `stable`)                  |
 |    ✗     | `version`         | Static Testkube CLI version to force its installation instead of the latest                                                  |
-|    ✗     | `mode`            | Configuration mode for CLI, either `kubectl` (default) or `cloud`. Additional params may be required, as per other sections. |
 
 ### Kubernetes (`kubectl`)
 
