@@ -1,4 +1,4 @@
-name: "Setup Testkube CLI"
+name: "Testkube"
 author: "Kubeshop"
 description: "Interact with your Testkube cluster."
 runs:
