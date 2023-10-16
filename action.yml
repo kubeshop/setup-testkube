@@ -1,4 +1,4 @@
-name: "Install Testkube"
+name: "Testkube Action"
 author: "Kubeshop"
 description: "Interact with your Testkube cluster."
 runs:
