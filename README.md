@@ -88,7 +88,7 @@ with:
 
 ```yaml
 steps:
-  # Set up AWS EKS
+  # Set up Kubectl (AWS EKS)
   - uses: aws-actions/configure-aws-credentials@v4
     with:
       aws-access-key-id: ${{ secrets.AwsAccessKeyId }}
