@@ -99,10 +99,6 @@ steps:
 
   # Setup Testkube
   - uses: kubeshop/setup-testkube@v1
-    with:
-      organization: ${{ secrets.TkOrganization }}
-      environment: ${{ secrets.TkEnvironment }}
-      token: ${{ secrets.TkToken }}
 
   # Use CLI with a shell script
   - run: |
