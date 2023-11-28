@@ -31,7 +31,7 @@ Use it to install Testkube CLI to manage your resources, run tests and test suit
 ## Table of content
 
 1. [Usage](#usage)
-   1. [Testkube Cloud](#testkube-cloud)
+   1. [Testkube Pro](#testkube-pro)
    2. [Self-hosted instance](#self-hosted-instance)
    3. [Examples](#examples)
       1. [Run a test on AWS EKS](#run-a-test-on-aws-eks)
@@ -44,11 +44,11 @@ Use it to install Testkube CLI to manage your resources, run tests and test suit
 ## Usage
 
 To use the action in your GitHub workflow, use `kubeshop/setup-testkube@v1` action.
-The configuration options are described in the [**Inputs**](#inputs) section, and may vary depending on the Testkube solution you are using ([**cloud**](#cloud) or [**self-hosted**](#self-hosted-instance)) and your needs.
+The configuration options are described in the [**Inputs**](#inputs) section, and may vary depending on the Testkube solution you are using ([**Pro**](#pro) or [**self-hosted**](#self-hosted-instance)) and your needs.
 
-### Testkube Cloud
+### Testkube Pro
 
-To use this GitHub Action for the [**Testkube Cloud**](https://app.testkube.io), you need to [**create API token**](https://docs.testkube.io/testkube-cloud/organization-management#api-tokens).
+To use this GitHub Action for the [**Testkube Pro**](https://app.testkube.io), you need to [**create API token**](https://docs.testkube.io/testkube-pro/organization-management#api-tokens).
 
 Then, pass the `organization` and `environment` IDs for the test, along with the `token` and other parameters specific for your use case:
 
@@ -142,7 +142,7 @@ Besides common inputs, there are some different for kubectl and Cloud connection
 
 | Required | Name           | Description                                                                                                                                                                                                                               |
 |:--------:|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|    ✓     | `organization` | The organization ID from Testkube Cloud or Enterprise - it starts with `tkc_org`, you may find it i.e. in the dashboard's URL                                                                                                             |
-|    ✓     | `environment`  | The environment ID from Testkube Cloud or Enterprise - it starts with `tkc_env`, you may find it i.e. in the dashboard's URL                                                                                                              |
-|    ✓     | `token`        | API token that has at least a permission to run specific test or test suite. You may read more about [**creating API token**](https://docs.testkube.io/testkube-cloud/organization-management#api-tokens) in Testkube Cloud or Enterprise |
+|    ✓     | `organization` | The organization ID from Testkube Pro or Enterprise - it starts with `tkc_org`, you may find it i.e. in the dashboard's URL                                                                                                             |
+|    ✓     | `environment`  | The environment ID from Testkube Pro or Enterprise - it starts with `tkc_env`, you may find it i.e. in the dashboard's URL                                                                                                              |
+|    ✓     | `token`        | API token that has at least a permission to run specific test or test suite. You may read more about [**creating API token**](https://docs.testkube.io/testkube-pro/organization-management#api-tokens) in Testkube Pro or Enterprise |
 |    ✗     | `url`          | URL of the Testkube Enterprise instance, if applicable                                                                                                                                                                                    |
