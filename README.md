@@ -35,11 +35,11 @@ Use it to install Testkube CLI to manage your resources, run tests and test suit
    2. [Self-hosted instance](#self-hosted-instance)
    3. [Examples](#examples)
       1. [Run a test on AWS EKS](#run-a-test-on-aws-eks)
-      2. [Run a test on the Cloud instance](#run-a-test-on-the-cloud-instance)
+      2. [Run a test on the Pro instance](#run-a-test-on-the-pro-instance)
 2. [Inputs](#inputs)
    1. [Common](#common)
    2. [Kubernetes (`kubectl`)](#kubernetes-kubectl)
-   3. [Cloud and Enterprise](#cloud-and-enterprise-cloud)
+   3. [Pro and Enterprise](#pro-and-enterprise)
 
 ## Usage
 
@@ -105,7 +105,7 @@ steps:
       testkube run test some-test-name -f
 ```
 
-#### Run a test on the Cloud instance
+#### Run a test on the Pro instance
 
 ```yaml
 steps:
@@ -123,7 +123,7 @@ steps:
 
 ## Inputs
 
-Besides common inputs, there are some different for kubectl and Cloud connection.
+Besides common inputs, there are some different for kubectl and Pro connection.
 
 ### Common
 
@@ -138,7 +138,7 @@ Besides common inputs, there are some different for kubectl and Cloud connection
 |:--------:|----------------|----------------------------------------------------------------------------------------|
 |    ✗     | `namespace`    | Set namespace where Testkube is deployed to (default: `testkube`)                      |
 
-### Cloud and Enterprise (`cloud`)
+### Pro and Enterprise
 
 | Required | Name           | Description                                                                                                                                                                                                                               |
 |:--------:|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
