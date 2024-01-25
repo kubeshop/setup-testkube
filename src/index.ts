@@ -1,11 +1,10 @@
-import {spawnSync} from 'node:child_process';
-import * as fs from 'node:fs';
-import * as stream from 'node:stream';
-import * as os from 'node:os';
-import {getInput} from '@actions/core';
-import got from 'got';
-import tar from 'tar';
-import which from 'which';
+import { spawnSync } from "node:child_process";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as toolCache from "@actions/tool-cache";
+import { getInput, addPath } from "@actions/core";
+import got from "got";
+import which from "which";
 
 interface Params {
   version?: string | null;
@@ -18,136 +17,174 @@ interface Params {
 }
 
 const params: Params = {
-  version: getInput('version'),
-  channel: getInput('channel') || 'stable',
-  namespace: getInput('namespace') || 'testkube',
-  url: getInput('url') || 'testkube.io',
-  organization: getInput('organization'),
-  environment: getInput('environment'),
-  token: getInput('token'),
+  version: getInput("version"),
+  channel: getInput("channel") || "stable",
+  namespace: getInput("namespace") || "testkube",
+  url: getInput("url") || "testkube.io",
+  organization: getInput("organization"),
+  environment: getInput("environment"),
+  token: getInput("token"),
 };
 
-const mode = (params.organization || params.environment || params.token) ? 'cloud' : 'kubectl';
-if (mode === 'cloud') {
+const mode = params.organization || params.environment || params.token ? "cloud" : "kubectl";
+if (mode === "cloud") {
   process.stdout.write(`Detected mode: cloud connection.\n`);
 } else {
-  process.stdout.write(`Detected mode: kubectl connection. To use Cloud connection instead, provide your 'organization', 'environment' and 'token'.\n`);
+  process.stdout.write(
+    `Detected mode: kubectl connection. To use Cloud connection instead, provide your 'organization', 'environment' and 'token'.\n`
+  );
 }
 
 // Check params
-if (mode === 'cloud') {
+if (mode === "cloud") {
   if (!params.organization || !params.environment || !params.token) {
-    throw new Error('You need to pass `organization`, `environment` and `token` for Cloud connection.');
+    throw new Error("You need to pass `organization`, `environment` and `token` for Cloud connection.");
   }
 }
 
 // Detect architecture
 const architectureMapping: Record<string, string> = {
-  x86_64: 'x86_64',
-  x64: 'x86_64',
-  amd64: 'x86_64',
-  arm64: 'arm64',
-  aarch64: 'arm64',
-  i386: 'i386',
+  x86_64: "x86_64",
+  x64: "x86_64",
+  amd64: "x86_64",
+  arm64: "arm64",
+  aarch64: "arm64",
+  i386: "i386",
 };
 const architecture = architectureMapping[os.machine()];
-process.stdout.write(`Architecture: ${os.machine()} (${architecture || 'unsupported'})\n`);
+process.stdout.write(`Architecture: ${os.machine()} (${architecture || "unsupported"})\n`);
 if (!architecture) {
-  throw new Error('We do not support this architecture yet.');
+  throw new Error("We do not support this architecture yet.");
 }
 
 // Detect OS
 const systemMapping: Record<string, string> = {
-  Linux: 'Linux',
-  Darwin: 'Darwin',
-  Windows: 'Windows',
-  Windows_NT: 'Windows',
+  Linux: "Linux",
+  Darwin: "Darwin",
+  Windows: "Windows",
+  Windows_NT: "Windows",
 };
 const system = systemMapping[os.type()];
-process.stdout.write(`System: ${os.type()} (${system || 'unsupported'})\n`);
+process.stdout.write(`System: ${os.type()} (${system || "unsupported"})\n`);
 if (!system) {
-  throw new Error('We do not support this OS yet.');
+  throw new Error("We do not support this OS yet.");
 }
 
 // Detect binaries path
 // TODO: Consider installing Testkube in some random place, and add it to PATH environment variable
-const detectedPaths = (process.env.PATH || '').split(':').filter(Boolean).sort((a, b) => a.length - b.length);
-const writablePaths = (await Promise.all(detectedPaths.map(async dirPath => ({path: dirPath, writable: await fs.promises.access(dirPath, fs.constants.W_OK).then(() => true).catch(() => false)})))).filter(x => x.writable).map(x => x.path);
-const preferredPaths = ['/usr/local/bin', '/usr/bin'];
-const binaryDirPath = preferredPaths.find(x => writablePaths.includes(x)) || writablePaths[0];
-process.stdout.write(`Binary path: ${binaryDirPath || '<none>'}\n`);
+const detectedPaths = (process.env.PATH || "")
+  .split(":")
+  .filter(Boolean)
+  .sort((a, b) => a.length - b.length);
+const writablePaths = (
+  await Promise.all(
+    detectedPaths.map(async (dirPath) => ({
+      path: dirPath,
+      writable: await fs.promises
+        .access(dirPath, fs.constants.W_OK)
+        .then(() => true)
+        .catch(() => false),
+    }))
+  )
+)
+  .filter((x) => x.writable)
+  .map((x) => x.path);
+const preferredPaths = ["/usr/local/bin", "/usr/bin"];
+const binaryDirPath = preferredPaths.find((x) => writablePaths.includes(x)) || writablePaths[0];
+process.stdout.write(`Binary path: ${binaryDirPath || "<none>"}\n`);
 if (!binaryDirPath) {
-  throw new Error('Could not find a writable path that is exposed in PATH to put the binary.');
+  throw new Error("Could not find a writable path that is exposed in PATH to put the binary.");
 }
 
 // Detect if there is kubectl installed
-if (mode === 'kubectl') {
-  const hasKubectl = await which('kubectl', {nothrow: true});
-  process.stdout.write(`kubectl: ${hasKubectl ? 'detected' : 'not available'}.\n`);
+if (mode === "kubectl") {
+  const hasKubectl = await which("kubectl", { nothrow: true });
+  process.stdout.write(`kubectl: ${hasKubectl ? "detected" : "not available"}.\n`);
   if (!hasKubectl) {
-    throw new Error('You do not have kubectl installed. Most likely you need to configure your workflow to initialize connection with Kubernetes cluster.');
+    throw new Error(
+      "You do not have kubectl installed. Most likely you need to configure your workflow to initialize connection with Kubernetes cluster."
+    );
   }
 } else {
-  process.stdout.write('kubectl: ignored for Cloud integration\n');
+  process.stdout.write("kubectl: ignored for Cloud integration\n");
 }
 
 // Detect if there is Testkube CLI already installed
-if (await which('kubectl-testkube', {nothrow: true})) {
-  process.stdout.write('Looks like you already have the Testkube CLI installed. Skipping...\n');
+if (await which("kubectl-testkube", { nothrow: true })) {
+  process.stdout.write("Looks like you already have the Testkube CLI installed. Skipping...\n");
 } else {
   // Detect the latest version
   if (params.version) {
-    params.version = params.version.replace(/^v/, '');
+    params.version = params.version.replace(/^v/, "");
     process.stdout.write(`Forcing "${params.version} version...\n`);
   } else {
     process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
-    if (params.channel === 'stable') {
-      const release: any = await got('https://api.github.com/repos/kubeshop/testkube/releases/latest').json();
+    if (params.channel === "stable") {
+      const release: any = await got("https://api.github.com/repos/kubeshop/testkube/releases/latest").json();
       params.version = release?.tag_name;
     } else {
-      const channels = ['stable', params.channel];
+      const channels = ["stable", params.channel];
       process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
 
-      const releases: any[] = await got('https://api.github.com/repos/kubeshop/testkube/releases').json();
-      const versions = releases.map(release => ({
+      const releases: any[] = await got("https://api.github.com/repos/kubeshop/testkube/releases").json();
+      const versions = releases.map((release) => ({
         tag: release.tag_name,
-        channel: release.tag_name.match(/-([^0-9]+)/)?.[1] || 'stable',
+        channel: release.tag_name.match(/-([^0-9]+)/)?.[1] || "stable",
       }));
-      params.version = versions.find(({channel}) => channels.includes(channel))?.tag;
+      params.version = versions.find(({ channel }) => channels.includes(channel))?.tag;
     }
     if (!params.version) {
-      throw new Error('Not found any version matching criteria.');
+      throw new Error("Not found any version matching criteria.");
     }
-    params.version = params.version.replace(/^v/, '');
+    params.version = params.version.replace(/^v/, "");
     process.stdout.write(`   Latest version: ${params.version}\n`);
   }
 
-  const artifactUrl = `https://github.com/kubeshop/testkube/releases/download/v${encodeURIComponent(params.version)}/testkube_${encodeURIComponent(params.version)}_${encodeURIComponent(system)}_${encodeURIComponent(architecture)}.tar.gz`;
-  process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
+  const encodedVersion = encodeURIComponent(params.version);
+  const encodedVerSysArch = `${encodeURIComponent(params.version)}_${encodeURIComponent(system)}_${encodeURIComponent(
+    architecture
+  )}`;
 
-  const artifactStream = got.stream(artifactUrl).pipe(tar.x({C: binaryDirPath}, ['kubectl-testkube']));
+  const artifactUrl = `https://github.com/kubeshop/testkube/releases/download/v${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`;
 
-  await stream.promises.finished(artifactStream);
+  const existingTestkubePath = toolCache.find("kubectl-testkube", params.version);
 
-  process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
+  if (!existingTestkubePath || existingTestkubePath.length === 0) {
+    process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
+    const artifactPath = await toolCache.downloadTool(artifactUrl);
+    const artifactExtractedPath = await toolCache.extractTar(artifactPath, binaryDirPath);
+    process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
+    const cachedDir = await toolCache.cacheDir(artifactExtractedPath, "kubectl-testkube", params.version);
+    addPath(cachedDir);
+  } else {
+    addPath(existingTestkubePath);
+    process.stdout.write(`Found existing Testkube CLI at "${existingTestkubePath}".\n`);
+  }
 
-  await fs.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/testkube`);
+  const testkubePath = existingTestkubePath
+    ? `${existingTestkubePath}/kubectl-testkube}`
+    : `${binaryDirPath}/kubectl-testkube`;
+
+  await fs.promises.symlink(`${testkubePath}`, `${binaryDirPath}/testkube`);
   process.stdout.write(`Linked CLI as ${binaryDirPath}/testkube.\n`);
 
-  await fs.promises.symlink(`${binaryDirPath}/kubectl-testkube`, `${binaryDirPath}/tk`);
+  await fs.promises.symlink(`${testkubePath}`, `${binaryDirPath}/tk`);
   process.stdout.write(`Linked CLI as ${binaryDirPath}/tk.\n`);
 }
 
 // Configure the Testkube context
-const contextArgs = mode === 'kubectl'
-  ? [
-    '--kubeconfig',
-    '--namespace', params.namespace!,
-  ] : [
-    '--api-key', params.token!,
-    '--cloud-root-domain', params.url!,
-    '--org', params.organization!,
-    '--env', params.environment!,
-  ];
+const contextArgs =
+  mode === "kubectl"
+    ? ["--kubeconfig", "--namespace", params.namespace!]
+    : [
+        "--api-key",
+        params.token!,
+        "--cloud-root-domain",
+        params.url!,
+        "--org",
+        params.organization!,
+        "--env",
+        params.environment!,
+      ];
 
-process.exit(spawnSync('testkube', ['set', 'context', ...contextArgs], {stdio: 'inherit'}).status || 0);
+process.exit(spawnSync("testkube", ["set", "context", ...contextArgs], { stdio: "inherit" }).status || 0);
