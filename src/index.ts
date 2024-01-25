@@ -109,8 +109,12 @@ if (mode === "kubectl") {
   process.stdout.write("kubectl: ignored for Cloud integration\n");
 }
 
-// Detect if there is Testkube CLI already installed
-if (await which("kubectl-testkube", { nothrow: true })) {
+const existingTestkubePath = params.version ? toolCache.find("kubectl-testkube", params.version) : "";
+const isTestkubeInstalled =
+  existingTestkubePath.length > 0 || Boolean(await which("kubectl-testkube", { nothrow: true }));
+
+if (isTestkubeInstalled) {
+  if (existingTestkubePath) addPath(existingTestkubePath);
   process.stdout.write("Looks like you already have the Testkube CLI installed. Skipping...\n");
 } else {
   // Detect the latest version
@@ -147,23 +151,17 @@ if (await which("kubectl-testkube", { nothrow: true })) {
 
   const artifactUrl = `https://github.com/kubeshop/testkube/releases/download/v${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`;
 
-  const existingTestkubePath = toolCache.find("kubectl-testkube", params.version);
-
-  if (!existingTestkubePath || existingTestkubePath.length === 0) {
+  if (!isTestkubeInstalled) {
     process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
     const artifactPath = await toolCache.downloadTool(artifactUrl);
     const artifactExtractedPath = await toolCache.extractTar(artifactPath, binaryDirPath);
     process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
     const cachedDir = await toolCache.cacheDir(artifactExtractedPath, "kubectl-testkube", params.version);
     addPath(cachedDir);
-  } else {
-    addPath(existingTestkubePath);
-    process.stdout.write(`Found existing Testkube CLI at "${existingTestkubePath}".\n`);
   }
 
-  const testkubePath = existingTestkubePath
-    ? `${existingTestkubePath}/kubectl-testkube}`
-    : `${binaryDirPath}/kubectl-testkube`;
+  const testkubePath =
+    existingTestkubePath.length > 0 ? `${existingTestkubePath}/kubectl-testkube}` : `${binaryDirPath}/kubectl-testkube`;
 
   await fs.promises.symlink(`${testkubePath}`, `${binaryDirPath}/testkube`);
   process.stdout.write(`Linked CLI as ${binaryDirPath}/testkube.\n`);
