@@ -110,8 +110,9 @@ if (mode === "kubectl") {
 }
 
 const existingTestkubePath = params.version ? toolCache.find("kubectl-testkube", params.version) : "";
-const isTestkubeInstalled =
-  existingTestkubePath.length > 0 || Boolean(await which("kubectl-testkube", { nothrow: true }));
+// if params.version is not specified, we will try to detect if there is any version installed
+const isUnknowmTestkubeInstalled = !params.version && Boolean(await which("kubectl-testkube", { nothrow: true }));
+const isTestkubeInstalled = existingTestkubePath.length > 0 || isUnknowmTestkubeInstalled;
 
 if (isTestkubeInstalled) {
   if (existingTestkubePath) addPath(existingTestkubePath);
@@ -154,6 +155,9 @@ if (isTestkubeInstalled) {
   if (!isTestkubeInstalled) {
     process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
     const artifactPath = await toolCache.downloadTool(artifactUrl);
+    if (fs.existsSync(`${binaryDirPath}/kubectl-testkube`)) {
+      fs.rmSync(`${binaryDirPath}/kubectl-testkube`);
+    }
     const artifactExtractedPath = await toolCache.extractTar(artifactPath, binaryDirPath);
     process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
     const cachedDir = await toolCache.cacheDir(artifactExtractedPath, "kubectl-testkube", params.version);
@@ -163,9 +167,15 @@ if (isTestkubeInstalled) {
   const testkubePath =
     existingTestkubePath.length > 0 ? `${existingTestkubePath}/kubectl-testkube}` : `${binaryDirPath}/kubectl-testkube`;
 
+  if (fs.existsSync(`${binaryDirPath}/testkube`)) {
+    fs.rmSync(`${binaryDirPath}/testkube`);
+  }
   await fs.promises.symlink(`${testkubePath}`, `${binaryDirPath}/testkube`);
   process.stdout.write(`Linked CLI as ${binaryDirPath}/testkube.\n`);
 
+  if (fs.existsSync(`${binaryDirPath}/tk`)) {
+    fs.rmSync(`${binaryDirPath}/tk`);
+  }
   await fs.promises.symlink(`${testkubePath}`, `${binaryDirPath}/tk`);
   process.stdout.write(`Linked CLI as ${binaryDirPath}/tk.\n`);
 }
