@@ -10826,11 +10826,11 @@ const contextArgs = mode === "kubectl"
     : [
         "--api-key",
         params.token,
-        "--cloud-root-domain",
+        "--root-domain",
         params.url,
-        "--org",
+        "--org-id",
         params.organization,
-        "--env",
+        "--env-id",
         params.environment,
     ];
 process.exit((0,node_child_process__WEBPACK_IMPORTED_MODULE_0__.spawnSync)("testkube", ["set", "context", ...contextArgs], { stdio: "inherit" }).status || 0);
