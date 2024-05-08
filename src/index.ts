@@ -187,11 +187,11 @@ const contextArgs =
     : [
         "--api-key",
         params.token!,
-        "--cloud-root-domain",
+        "--root-domain",
         params.url!,
-        "--org",
+        "--org-id",
         params.organization!,
-        "--env",
+        "--env-id",
         params.environment!,
       ];
 
