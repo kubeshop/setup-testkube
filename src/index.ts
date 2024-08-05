@@ -11,6 +11,9 @@ interface Params {
   channel: string;
   namespace?: string | null;
   url: string;
+  urlApiPrefix?: string | null;
+  urlUiPrefix?: string | null;
+  urlLogsPrefix?: string | null;
   organization?: string | null;
   environment?: string | null;
   token?: string | null;
@@ -21,6 +24,9 @@ const params: Params = {
   channel: getInput("channel") || "stable",
   namespace: getInput("namespace") || "testkube",
   url: getInput("url") || "testkube.io",
+  urlApiPrefix: getInput("urlApiPrefix"),
+  urlUiPrefix: getInput("urlUiPrefix"),
+  urlLogsPrefix: getInput("urlLogsPrefix"),
   organization: getInput("organization"),
   environment: getInput("environment"),
   token: getInput("token"),
@@ -193,6 +199,9 @@ const contextArgs =
         params.organization!,
         "--env-id",
         params.environment!,
+        ...(params.urlApiPrefix ? ["--api-prefix", params.urlApiPrefix] : []),
+        ...(params.urlUiPrefix ? ["--ui-prefix", params.urlUiPrefix] : []),
+        ...(params.urlLogsPrefix ? ["--logs-prefix", params.urlLogsPrefix] : []),
       ];
 
 process.exit(spawnSync("testkube", ["set", "context", ...contextArgs], { stdio: "inherit" }).status || 0);

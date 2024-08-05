@@ -10683,6 +10683,9 @@ const params = {
     channel: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("channel") || "stable",
     namespace: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("namespace") || "testkube",
     url: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("url") || "testkube.io",
+    urlApiPrefix: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("urlApiPrefix"),
+    urlUiPrefix: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("urlUiPrefix"),
+    urlLogsPrefix: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("urlLogsPrefix"),
     organization: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("organization"),
     environment: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("environment"),
     token: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("token"),
@@ -10832,6 +10835,9 @@ const contextArgs = mode === "kubectl"
         params.organization,
         "--env-id",
         params.environment,
+        ...(params.urlApiPrefix ? ["--api-prefix", params.urlApiPrefix] : []),
+        ...(params.urlUiPrefix ? ["--ui-prefix", params.urlUiPrefix] : []),
+        ...(params.urlLogsPrefix ? ["--logs-prefix", params.urlLogsPrefix] : []),
     ];
 process.exit((0,node_child_process__WEBPACK_IMPORTED_MODULE_0__.spawnSync)("testkube", ["set", "context", ...contextArgs], { stdio: "inherit" }).status || 0);
 
