@@ -28,6 +28,15 @@ inputs:
     description: "Testkube Cloud/Enterprise root domain, defaults to the Testkube Cloud (testkube.io)."
     default: "testkube.io"
     required: false
+  urlApiSubdomain:
+    description: "API URL subdomain before the Testkube Cloud/Enterprise root domain, if custom setup."
+    required: false
+  urlUiSubdomain:
+    description: "Dashboard URL subdomain before the Testkube Cloud/Enterprise root domain, if custom setup."
+    required: false
+  urlLogsSubdomain:
+    description: "Logs Server URL subdomain before the Testkube Cloud/Enterprise root domain, if custom setup."
+    required: false
   organization:
     description: "Organization ID in the Testkube Cloud/Enterprise."
     required: false
