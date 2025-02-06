@@ -171,7 +171,7 @@ if (isTestkubeInstalled) {
   }
 
   const testkubePath =
-    existingTestkubePath.length > 0 ? `${existingTestkubePath}/kubectl-testkube}` : `${binaryDirPath}/kubectl-testkube`;
+    existingTestkubePath.length > 0 ? `${existingTestkubePath}/kubectl-testkube` : `${binaryDirPath}/kubectl-testkube`;
 
   if (fs.existsSync(`${binaryDirPath}/testkube`)) {
     fs.rmSync(`${binaryDirPath}/testkube`);
