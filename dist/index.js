@@ -32420,7 +32420,7 @@ else {
         }
         const artifactExtractedPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_3__.extractTar(artifactPath, binaryDirPath);
         process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
-        const cachedDir = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_3__.cacheDir(artifactExtractedPath, "kubectl-testkube", params.version);
+        const cachedDir = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_3__.cacheFile(artifactExtractedPath, 'kubectl-testkube', 'kubectl-testkube', params.version);
         (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.addPath)(cachedDir);
     }
     process.stdout.write(`Linking CLI...\n`);
