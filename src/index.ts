@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import * as fs from "node:fs";
+import * as path from "node:path";
 import * as os from "node:os";
 import * as toolCache from "@actions/tool-cache";
 import { getInput, addPath } from "@actions/core";
@@ -166,7 +167,7 @@ if (isTestkubeInstalled) {
     }
     const artifactExtractedPath = await toolCache.extractTar(artifactPath, binaryDirPath);
     process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
-    const cachedDir = await toolCache.cacheDir(artifactExtractedPath, "kubectl-testkube", params.version);
+    const cachedDir = await toolCache.cacheFile(artifactExtractedPath, 'kubectl-testkube', 'kubectl-testkube', params.version);
     addPath(cachedDir);
   }
 
