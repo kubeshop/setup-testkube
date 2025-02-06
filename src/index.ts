@@ -170,6 +170,8 @@ if (isTestkubeInstalled) {
     addPath(cachedDir);
   }
 
+  process.stdout.write(`Linking CLI...\n`);
+
   const testkubePath =
     existingTestkubePath.length > 0 ? `${existingTestkubePath}/kubectl-testkube` : `${binaryDirPath}/kubectl-testkube`;
 
