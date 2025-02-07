@@ -32274,15 +32274,18 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony import */ var node_child_process__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(node_child_process__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var node_fs__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(7561);
 /* harmony import */ var node_fs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(node_fs__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var node_os__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(612);
-/* harmony import */ var node_os__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(node_os__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _actions_tool_cache__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(7784);
-/* harmony import */ var _actions_tool_cache__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__nccwpck_require__.n(_actions_tool_cache__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(2186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var got__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(9030);
-/* harmony import */ var which__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(6143);
-/* harmony import */ var which__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__nccwpck_require__.n(which__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var node_path__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(9411);
+/* harmony import */ var node_path__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(node_path__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var node_os__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(612);
+/* harmony import */ var node_os__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__nccwpck_require__.n(node_os__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(7784);
+/* harmony import */ var _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__nccwpck_require__.n(_actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(2186);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var got__WEBPACK_IMPORTED_MODULE_7__ = __nccwpck_require__(9030);
+/* harmony import */ var which__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(6143);
+/* harmony import */ var which__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__nccwpck_require__.n(which__WEBPACK_IMPORTED_MODULE_6__);
+
 
 
 
@@ -32291,16 +32294,16 @@ __nccwpck_require__.r(__webpack_exports__);
 
 
 const params = {
-    version: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("version"),
-    channel: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("channel") || "stable",
-    namespace: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("namespace") || "testkube",
-    url: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("url") || "testkube.io",
-    urlApiSubdomain: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("urlApiSubdomain"),
-    urlUiSubdomain: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("urlUiSubdomain"),
-    urlLogsSubdomain: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("urlLogsSubdomain"),
-    organization: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("organization"),
-    environment: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("environment"),
-    token: (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.getInput)("token"),
+    version: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("version"),
+    channel: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("channel") || "stable",
+    namespace: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("namespace") || "testkube",
+    url: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("url") || "testkube.io",
+    urlApiSubdomain: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("urlApiSubdomain"),
+    urlUiSubdomain: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("urlUiSubdomain"),
+    urlLogsSubdomain: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("urlLogsSubdomain"),
+    organization: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("organization"),
+    environment: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("environment"),
+    token: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("token"),
 };
 const mode = params.organization || params.environment || params.token ? "cloud" : "kubectl";
 if (mode === "cloud") {
@@ -32324,8 +32327,8 @@ const architectureMapping = {
     aarch64: "arm64",
     i386: "i386",
 };
-const architecture = architectureMapping[node_os__WEBPACK_IMPORTED_MODULE_2__.machine()];
-process.stdout.write(`Architecture: ${node_os__WEBPACK_IMPORTED_MODULE_2__.machine()} (${architecture || "unsupported"})\n`);
+const architecture = architectureMapping[node_os__WEBPACK_IMPORTED_MODULE_3__.machine()];
+process.stdout.write(`Architecture: ${node_os__WEBPACK_IMPORTED_MODULE_3__.machine()} (${architecture || "unsupported"})\n`);
 if (!architecture) {
     throw new Error("We do not support this architecture yet.");
 }
@@ -32336,8 +32339,8 @@ const systemMapping = {
     Windows: "Windows",
     Windows_NT: "Windows",
 };
-const system = systemMapping[node_os__WEBPACK_IMPORTED_MODULE_2__.type()];
-process.stdout.write(`System: ${node_os__WEBPACK_IMPORTED_MODULE_2__.type()} (${system || "unsupported"})\n`);
+const system = systemMapping[node_os__WEBPACK_IMPORTED_MODULE_3__.type()];
+process.stdout.write(`System: ${node_os__WEBPACK_IMPORTED_MODULE_3__.type()} (${system || "unsupported"})\n`);
 if (!system) {
     throw new Error("We do not support this OS yet.");
 }
@@ -32363,7 +32366,7 @@ if (!binaryDirPath) {
 }
 // Detect if there is kubectl installed
 if (mode === "kubectl") {
-    const hasKubectl = await which__WEBPACK_IMPORTED_MODULE_5___default()("kubectl", { nothrow: true });
+    const hasKubectl = await which__WEBPACK_IMPORTED_MODULE_6___default()("kubectl", { nothrow: true });
     process.stdout.write(`kubectl: ${hasKubectl ? "detected" : "not available"}.\n`);
     if (!hasKubectl) {
         throw new Error("You do not have kubectl installed. Most likely you need to configure your workflow to initialize connection with Kubernetes cluster.");
@@ -32372,13 +32375,13 @@ if (mode === "kubectl") {
 else {
     process.stdout.write("kubectl: ignored for Cloud integration\n");
 }
-const existingTestkubePath = params.version ? _actions_tool_cache__WEBPACK_IMPORTED_MODULE_3__.find("kubectl-testkube", params.version) : "";
+const existingTestkubePath = params.version ? _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.find("kubectl-testkube", params.version) : "";
 // if params.version is not specified, we will try to detect if there is any version installed
-const isUnknowmTestkubeInstalled = !params.version && Boolean(await which__WEBPACK_IMPORTED_MODULE_5___default()("kubectl-testkube", { nothrow: true }));
+const isUnknowmTestkubeInstalled = !params.version && Boolean(await which__WEBPACK_IMPORTED_MODULE_6___default()("kubectl-testkube", { nothrow: true }));
 const isTestkubeInstalled = existingTestkubePath.length > 0 || isUnknowmTestkubeInstalled;
 if (isTestkubeInstalled) {
     if (existingTestkubePath)
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.addPath)(existingTestkubePath);
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.addPath)(existingTestkubePath);
     process.stdout.write("Looks like you already have the Testkube CLI installed. Skipping...\n");
 }
 else {
@@ -32390,13 +32393,13 @@ else {
     else {
         process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
         if (params.channel === "stable") {
-            const release = await (0,got__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .ZP)("https://api.github.com/repos/kubeshop/testkube/releases/latest").json();
+            const release = await (0,got__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .ZP)("https://api.github.com/repos/kubeshop/testkube/releases/latest").json();
             params.version = release?.tag_name;
         }
         else {
             const channels = ["stable", params.channel];
             process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
-            const releases = await (0,got__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .ZP)("https://api.github.com/repos/kubeshop/testkube/releases").json();
+            const releases = await (0,got__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .ZP)("https://api.github.com/repos/kubeshop/testkube/releases").json();
             const versions = releases.map((release) => ({
                 tag: release.tag_name,
                 channel: release.tag_name.match(/-([^0-9]+)/)?.[1] || "stable",
@@ -32414,14 +32417,13 @@ else {
     const artifactUrl = `https://github.com/kubeshop/testkube/releases/download/v${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`;
     if (!isTestkubeInstalled) {
         process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
-        const artifactPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_3__.downloadTool(artifactUrl);
+        const artifactPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.downloadTool(artifactUrl);
         if (node_fs__WEBPACK_IMPORTED_MODULE_1__.existsSync(`${binaryDirPath}/kubectl-testkube`)) {
             node_fs__WEBPACK_IMPORTED_MODULE_1__.rmSync(`${binaryDirPath}/kubectl-testkube`);
         }
-        const artifactExtractedPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_3__.extractTar(artifactPath, binaryDirPath);
-        process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
-        const cachedDir = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_3__.cacheFile(artifactExtractedPath, 'kubectl-testkube', 'kubectl-testkube', params.version);
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_4__.addPath)(cachedDir);
+        const artifactExtractedPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.extractTar(artifactPath, binaryDirPath);
+        const cachedDir = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.cacheFile(node_path__WEBPACK_IMPORTED_MODULE_2__.join(artifactExtractedPath, 'kubectl-testkube'), 'kubectl-testkube', 'kubectl-testkube', params.version);
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.addPath)(cachedDir);
     }
     process.stdout.write(`Linking CLI...\n`);
     const testkubePath = existingTestkubePath.length > 0 ? `${existingTestkubePath}/kubectl-testkube` : `${binaryDirPath}/kubectl-testkube`;
@@ -32608,6 +32610,14 @@ module.exports = require("node:fs");
 
 "use strict";
 module.exports = require("node:os");
+
+/***/ }),
+
+/***/ 9411:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:path");
 
 /***/ }),
 

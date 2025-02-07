@@ -166,8 +166,7 @@ if (isTestkubeInstalled) {
       fs.rmSync(`${binaryDirPath}/kubectl-testkube`);
     }
     const artifactExtractedPath = await toolCache.extractTar(artifactPath, binaryDirPath);
-    process.stdout.write(`Extracted CLI to ${binaryDirPath}/kubectl-testkube.\n`);
-    const cachedDir = await toolCache.cacheFile(artifactExtractedPath, 'kubectl-testkube', 'kubectl-testkube', params.version);
+    const cachedDir = await toolCache.cacheFile(path.join(artifactExtractedPath, 'kubectl-testkube'), 'kubectl-testkube', 'kubectl-testkube', params.version);
     addPath(cachedDir);
   }
 
