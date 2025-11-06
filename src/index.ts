@@ -6,6 +6,10 @@ import * as toolCache from "@actions/tool-cache";
 import { getInput, addPath } from "@actions/core";
 import got from "got";
 import which from "which";
+import semver from "semver";
+
+// From 2.4.0 we dropped the `v` prefix. Before that we should respect that.
+const TAG_UPDATED_SINCE = "2.4.0";
 
 interface Params {
   version?: string | null;
@@ -157,7 +161,10 @@ if (isTestkubeInstalled) {
     architecture
   )}`;
 
-  const artifactUrl = `https://github.com/kubeshop/testkube/releases/download/v${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`;
+  const isLegacyVersion = semver.lt(encodedVersion, TAG_UPDATED_SINCE);
+  const artifactUrl = isLegacyVersion
+    ? `https://github.com/kubeshop/testkube/releases/download/v${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`
+    : `https://github.com/kubeshop/testkube/releases/download/${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`;
 
   if (!isTestkubeInstalled) {
     process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
@@ -166,7 +173,12 @@ if (isTestkubeInstalled) {
       fs.rmSync(`${binaryDirPath}/kubectl-testkube`);
     }
     const artifactExtractedPath = await toolCache.extractTar(artifactPath, binaryDirPath);
-    const cachedDir = await toolCache.cacheFile(path.join(artifactExtractedPath, 'kubectl-testkube'), 'kubectl-testkube', 'kubectl-testkube', params.version);
+    const cachedDir = await toolCache.cacheFile(
+      path.join(artifactExtractedPath, "kubectl-testkube"),
+      "kubectl-testkube",
+      "kubectl-testkube",
+      params.version
+    );
     addPath(cachedDir);
   }
 
