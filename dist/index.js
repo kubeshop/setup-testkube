@@ -35024,6 +35024,7 @@ const params = {
     organization: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("organization"),
     environment: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("environment"),
     token: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("token"),
+    telemetryEnabled: (0,_actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput)("telemetry-enabled") !== "false",
 };
 const mode = params.organization || params.environment || params.token ? "cloud" : "kubectl";
 if (mode === "cloud") {
@@ -35177,7 +35178,19 @@ const contextArgs = mode === "kubectl"
         ...(params.urlUiSubdomain ? ["--ui-prefix", params.urlUiSubdomain] : []),
         ...(params.urlLogsSubdomain ? ["--logs-prefix", params.urlLogsSubdomain] : []),
     ];
-process.exit((0,node_child_process__WEBPACK_IMPORTED_MODULE_0__.spawnSync)("testkube", ["set", "context", ...contextArgs], { stdio: "inherit" }).status || 0);
+const contextResult = (0,node_child_process__WEBPACK_IMPORTED_MODULE_0__.spawnSync)("testkube", ["set", "context", ...contextArgs], { stdio: "inherit" });
+if (contextResult.status !== 0) {
+    process.exit(contextResult.status || 1);
+}
+// Disable telemetry if requested
+if (!params.telemetryEnabled) {
+    process.stdout.write("Disabling telemetry...\n");
+    const telemetryResult = (0,node_child_process__WEBPACK_IMPORTED_MODULE_0__.spawnSync)("testkube", ["disable", "telemetry"], { stdio: "inherit" });
+    if (telemetryResult.status !== 0) {
+        process.exit(telemetryResult.status || 1);
+    }
+}
+process.exit(0);
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } }, 1);

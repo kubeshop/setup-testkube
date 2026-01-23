@@ -35,7 +35,8 @@ Use it to install Testkube CLI to manage your resources, run tests and test suit
    2. [Self-hosted instance](#self-hosted-instance)
    3. [Examples](#examples)
       1. [Run a test on AWS EKS](#run-a-test-on-aws-eks)
-      2. [Run a test on the Pro instance](#run-a-test-on-the-pro-instance)
+      2. [Run a test with telemetry disabled](#run-a-test-with-telemetry-disabled)
+      3. [Run a test on the Pro instance](#run-a-test-on-the-pro-instance)
 2. [Inputs](#inputs)
    1. [Common](#common)
    2. [Kubernetes (`kubectl`)](#kubernetes-kubectl)
@@ -105,6 +106,21 @@ steps:
       testkube run test some-test-name -f
 ```
 
+#### Run a test with telemetry disabled
+
+```yaml
+steps:
+  # Setup Testkube with telemetry disabled
+  - uses: kubeshop/setup-testkube@v1
+    with:
+      namespace: default
+      telemetry-enabled: false
+
+  # Use CLI with a shell script
+  - run: |
+      testkube run test some-test-name -f
+```
+
 #### Run a test on the Pro instance
 
 ```yaml
@@ -127,10 +143,11 @@ Besides common inputs, there are some different for kubectl and Pro connection.
 
 ### Common
 
-| Required | Name              | Description                                                                                                                  |
-|:--------:|-------------------|------------------------------------------------------------------------------------------------------------------------------|
-|    ✗     | `channel`         | Distribution channel to install the latest application from - one of `stable` or `beta` (default: `stable`)                  |
-|    ✗     | `version`         | Static Testkube CLI version to force its installation instead of the latest                                                  |
+| Required | Name               | Description                                                                                                                  |
+|:--------:|--------------------|------------------------------------------------------------------------------------------------------------------------------|
+|    ✗     | `channel`          | Distribution channel to install the latest application from - one of `stable` or `beta` (default: `stable`)                  |
+|    ✗     | `version`          | Static Testkube CLI version to force its installation instead of the latest                                                  |
+|    ✗     | `telemetry-enabled`| Enable or disable Testkube telemetry (default: `true`)                                                                       |
 
 ### Kubernetes (`kubectl`)
 
