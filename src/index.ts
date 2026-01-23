@@ -22,6 +22,7 @@ interface Params {
   organization?: string | null;
   environment?: string | null;
   token?: string | null;
+  telemetryEnabled: boolean;
 }
 
 const params: Params = {
@@ -35,6 +36,7 @@ const params: Params = {
   organization: getInput("organization"),
   environment: getInput("environment"),
   token: getInput("token"),
+  telemetryEnabled: getInput("telemetry-enabled") !== "false",
 };
 
 const mode = params.organization || params.environment || params.token ? "cloud" : "kubectl";
@@ -218,4 +220,18 @@ const contextArgs =
         ...(params.urlLogsSubdomain ? ["--logs-prefix", params.urlLogsSubdomain] : []),
       ];
 
-process.exit(spawnSync("testkube", ["set", "context", ...contextArgs], { stdio: "inherit" }).status || 0);
+const contextResult = spawnSync("testkube", ["set", "context", ...contextArgs], { stdio: "inherit" });
+if (contextResult.status !== 0) {
+  process.exit(contextResult.status || 1);
+}
+
+// Disable telemetry if requested
+if (!params.telemetryEnabled) {
+  process.stdout.write("Disabling telemetry...\n");
+  const telemetryResult = spawnSync("testkube", ["disable", "telemetry"], { stdio: "inherit" });
+  if (telemetryResult.status !== 0) {
+    process.exit(telemetryResult.status || 1);
+  }
+}
+
+process.exit(0);

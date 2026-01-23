@@ -46,3 +46,7 @@ inputs:
   token:
     description: "Auth token for the Testkube instance."
     required: false
+  telemetry-enabled:
+    description: "Enable or disable Testkube telemetry (default: true)."
+    required: false
+    default: "true"
