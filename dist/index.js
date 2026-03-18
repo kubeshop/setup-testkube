@@ -35011,6 +35011,7 @@ __nccwpck_require__.r(__webpack_exports__);
 
 
 
+
 // From 2.4.0 we dropped the `v` prefix. Before that we should respect that.
 const TAG_UPDATED_SINCE = "2.4.0";
 const params = {
@@ -35134,13 +35135,30 @@ else {
     }
     const encodedVersion = encodeURIComponent(params.version);
     const encodedVerSysArch = `${encodeURIComponent(params.version)}_${encodeURIComponent(system)}_${encodeURIComponent(architecture)}`;
+    // Before 2.4.0, release tags used a "v" prefix (e.g. v2.3.0). From 2.4.0 onward, the prefix was dropped.
+    // We pick the expected URL based on semver, then fall back to the alternative format on HTTP errors.
     const isLegacyVersion = semver__WEBPACK_IMPORTED_MODULE_7___default().lt(encodedVersion, TAG_UPDATED_SINCE);
-    const artifactUrl = isLegacyVersion
+    const primaryArtifactUrl = isLegacyVersion
         ? `https://github.com/kubeshop/testkube/releases/download/v${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`
         : `https://github.com/kubeshop/testkube/releases/download/${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`;
+    const fallbackArtifactUrl = isLegacyVersion
+        ? `https://github.com/kubeshop/testkube/releases/download/${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`
+        : `https://github.com/kubeshop/testkube/releases/download/v${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`;
     if (!isTestkubeInstalled) {
-        process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
-        const artifactPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.downloadTool(artifactUrl);
+        let artifactPath;
+        process.stdout.write(`Downloading the artifact from "${primaryArtifactUrl}"...\n`);
+        try {
+            artifactPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.downloadTool(primaryArtifactUrl);
+        }
+        catch (e) {
+            if (e instanceof _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.HTTPError && e.httpStatusCode === 404) {
+                process.stdout.write(`Primary URL failed, falling back to "${fallbackArtifactUrl}"...\n`);
+                artifactPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.downloadTool(fallbackArtifactUrl);
+            }
+            else {
+                throw e;
+            }
+        }
         if (node_fs__WEBPACK_IMPORTED_MODULE_1__.existsSync(`${binaryDirPath}/kubectl-testkube`)) {
             node_fs__WEBPACK_IMPORTED_MODULE_1__.rmSync(`${binaryDirPath}/kubectl-testkube`);
         }
