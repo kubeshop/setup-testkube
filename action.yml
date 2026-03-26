@@ -2,7 +2,7 @@ name: "Testkube Action"
 author: "Kubeshop"
 description: "Interact with your Testkube cluster."
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.js"
 branding:
   icon: "check-circle"
