@@ -6,8 +6,8 @@
   "author": "Kubeshop",
   "main": "dist/index.js",
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
   },
   "scripts": {
     "build": "rimraf dist && npx ncc build src/index.ts --license licenses.txt"
@@ -30,7 +30,7 @@
     "which": "^4.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.16.3",
+    "@types/node": "^24.0.0",
     "@types/semver": "7.7.1",
     "@types/tar": "^6.1.6",
     "@types/which": "^3.0.0",

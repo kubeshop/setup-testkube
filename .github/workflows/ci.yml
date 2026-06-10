@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify dist is up to date
+        run: |
+          if [ -n "$(git diff --name-only dist/)" ]; then
+            echo "::error::dist/ is out of date. Run 'npm run build' and commit."
+            git diff --stat dist/
+            exit 1
+          fi
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Verify action loads on Node 24
+        run: |
+          node -e "
+            process.env.INPUT_CHANNEL = 'stable';
+            process.env.INPUT_URL = 'testkube.io';
+            process.env.RUNNER_TEMP = '/tmp';
+            process.env.RUNNER_TOOL_CACHE = '/tmp/cache';
+            import('./dist/index.js').catch(e => {
+              // Expected to fail at network/path level, not syntax
+              if (e.message.includes('writable path') || e.message.includes('kubectl')) {
+                console.log('Action loaded and executed on Node', process.version);
+                process.exit(0);
+              }
+              console.error('Unexpected:', e.message);
+              process.exit(1);
+            });
+          "
