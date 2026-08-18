@@ -46,3 +46,6 @@ inputs:
   token:
     description: "Auth token for the Testkube instance."
     required: false
+  github-token:
+    description: "GitHub token used to authenticate requests to the GitHub Releases API."
+    required: false

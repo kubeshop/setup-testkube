@@ -22,6 +22,7 @@ interface Params {
   organization?: string | null;
   environment?: string | null;
   token?: string | null;
+  githubToken?: string | null;
 }
 
 const params: Params = {
@@ -35,7 +36,12 @@ const params: Params = {
   organization: getInput("organization"),
   environment: getInput("environment"),
   token: getInput("token"),
+  githubToken: getInput("github-token"),
 };
+
+const githubApiOptions = params.githubToken
+  ? { headers: { authorization: `Bearer ${params.githubToken}` } }
+  : undefined;
 
 const mode = params.organization || params.environment || params.token ? "cloud" : "kubectl";
 if (mode === "cloud") {
@@ -136,13 +142,13 @@ if (isTestkubeInstalled) {
   } else {
     process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
     if (params.channel === "stable") {
-      const release: any = await got("https://api.github.com/repos/kubeshop/testkube/releases/latest").json();
+      const release: any = await got("https://api.github.com/repos/kubeshop/testkube/releases/latest", githubApiOptions).json();
       params.version = release?.tag_name;
     } else {
       const channels = ["stable", params.channel];
       process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
 
-      const releases: any[] = await got("https://api.github.com/repos/kubeshop/testkube/releases").json();
+      const releases: any[] = await got("https://api.github.com/repos/kubeshop/testkube/releases", githubApiOptions).json();
       const versions = releases.map((release) => ({
         tag: release.tag_name,
         channel: release.tag_name.match(/-([^0-9]+)/)?.[1] || "stable",
