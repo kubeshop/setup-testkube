@@ -16,6 +16,10 @@ inputs:
   version:
     description: "Specific Testkube CLI version to install. Defaults to latest."
     required: false
+  github-token:
+    description: "GitHub token for looking up the latest Testkube release, to avoid the GitHub API rate limit for unauthenticated requests. Used only on github.com."
+    required: false
+    default: ${{ github.token }}
 
   # kubectl configuration
   namespace:
