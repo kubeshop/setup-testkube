@@ -131,6 +131,7 @@ Besides common inputs, there are some different for kubectl and Pro connection.
 |:--------:|-------------------|------------------------------------------------------------------------------------------------------------------------------|
 |    ✗     | `channel`         | Distribution channel to install the latest application from - one of `stable` or `beta` (default: `stable`)                  |
 |    ✗     | `version`         | Static Testkube CLI version to force its installation instead of the latest                                                  |
+|    ✗     | `github-token`    | GitHub token for looking up the latest release, to avoid the API rate limit for unauthenticated requests (default: `${{ github.token }}`, sent only on github.com) |
 
 ### Kubernetes (`kubectl`)
 

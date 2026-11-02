@@ -22,6 +22,7 @@ interface Params {
   organization?: string | null;
   environment?: string | null;
   token?: string | null;
+  githubToken?: string | null;
 }
 
 const params: Params = {
@@ -35,7 +36,15 @@ const params: Params = {
   organization: getInput("organization"),
   environment: getInput("environment"),
   token: getInput("token"),
+  githubToken: getInput("github-token"),
 };
+
+// The latest release is looked up on api.github.com. Authenticated requests get a much higher rate limit than the
+// unauthenticated ones, which runners sharing an IP address use up quickly. The token is sent only when the workflow
+// runs on github.com, since a GitHub Enterprise Server token isn't valid there.
+const isGitHubDotCom = (process.env.GITHUB_SERVER_URL || "https://github.com") === "https://github.com";
+const githubApiHeaders: Record<string, string> =
+  params.githubToken && isGitHubDotCom ? { authorization: `Bearer ${params.githubToken}` } : {};
 
 const mode = params.organization || params.environment || params.token ? "cloud" : "kubectl";
 if (mode === "cloud") {
@@ -136,13 +145,17 @@ if (isTestkubeInstalled) {
   } else {
     process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
     if (params.channel === "stable") {
-      const release: any = await got("https://api.github.com/repos/kubeshop/testkube/releases/latest").json();
+      const release: any = await got("https://api.github.com/repos/kubeshop/testkube/releases/latest", {
+        headers: githubApiHeaders,
+      }).json();
       params.version = release?.tag_name;
     } else {
       const channels = ["stable", params.channel];
       process.stdout.write(`Detecting the latest version for minimum of "${params.channel}" channel...\n`);
 
-      const releases: any[] = await got("https://api.github.com/repos/kubeshop/testkube/releases").json();
+      const releases: any[] = await got("https://api.github.com/repos/kubeshop/testkube/releases", {
+        headers: githubApiHeaders,
+      }).json();
       const versions = releases.map((release) => ({
         tag: release.tag_name,
         channel: release.tag_name.match(/-([^0-9]+)/)?.[1] || "stable",
